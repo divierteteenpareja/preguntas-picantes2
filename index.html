@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0c">
+    <meta name="description" content="Preguntas Picantes - juego para parejas">
+    <title>Preguntas Picantes</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --female-color: #ff007a;
+            --male-color: #00d4ff;
+            --bg-dark: #0a0a0c;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        button, input {
+            font-family: inherit;
+        }
+
+        .app-header {
+            padding: 30px 20px 10px;
+            text-align: center;
+        }
+
+        .app-header h1 {
+            font-weight: 900;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            margin: 0;
+            background: linear-gradient(to right, var(--female-color), var(--male-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .intro-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ffcc00;
+            margin: 15px 0;
+            font-style: italic;
+            font-weight: 500;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
+        }
+
+        .player-label {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-bottom: 5px;
+        }
+
+        .player-name {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin: 0 0 20px 0;
+            text-transform: uppercase;
+            overflow-wrap: anywhere;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            font-style: italic;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--female-color);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 20px;
+            padding: 18px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-back {
+            background: transparent;
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 12px;
+            padding: 12px;
+            font-size: 0.75rem;
+        }
+
+        .progress-container {
+            margin-top: 30px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #aaa;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--female-color), var(--male-color));
+            transition: width 0.6s ease;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .female-text {
+            color: var(--female-color);
+        }
+
+        .male-text {
+            color: var(--male-color);
+        }
+
+        .bg-female {
+            background: radial-gradient(circle at top right, #2d0016, #000000);
+        }
+
+        .bg-male {
+            background: radial-gradient(circle at top left, #001a2d, #000000);
+        }
+
+        @media (max-width: 380px) {
+            .app-header {
+                padding-top: 20px;
+            }
+
+            .card {
+                padding: 28px 20px;
+                min-height: 390px;
+            }
+
+            .player-name {
+                font-size: 1.8rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-dark">
+
+    <header class="app-header">
+        <h1>Preguntas Picantes</h1>
+    </header>
+
+    <main class="container">
+
+        <!-- PANTALLA INICIAL -->
+        <section id="screen-start" class="screen active">
+            <div class="card">
+                <div>
+                    <h2 style="font-size: 1.2rem; margin-bottom: 20px;">
+                        Bienvenidos
+                    </h2>
+
+                    <input
+                        type="text"
+                        id="name-female"
+                        placeholder="Nombre de Ella"
+                        maxlength="30"
+                        autocomplete="off"
+                    >
+
+                    <input
+                        type="text"
+                        id="name-male"
+                        placeholder="Nombre de Él"
+                        maxlength="30"
+                        autocomplete="off"
+                    >
+
+                    <div class="intro-text">
+                        "Preparaos para una experiencia íntima y reveladora.
+                        Sed valientes, contestad con total sinceridad y recordad:
+                        lo que pase en el juego, se queda en el juego.
+                        ¡Dejad que la curiosidad os guíe!"
+                    </div>
+                </div>
+
+                <button
+                    class="btn"
+                    style="background: linear-gradient(45deg, var(--female-color), var(--male-color)); color: #fff;"
+                    onclick="startGame()"
+                >
+                    Comenzar experiencia
+                </button>
+            </div>
+        </section>
+
+        <!-- PANTALLA DEL JUEGO -->
+        <section id="screen-game" class="screen">
+            <div class="card">
+
+                <div>
+                    <div class="player-label">Turno de</div>
+
+                    <h2 id="current-player-name" class="player-name">
+                        NOMBRE
+                    </h2>
+                </div>
+
+                <div id="question-content" class="question-text">
+                    ¿Listos?
+                </div>
+
+                <div class="actions">
+                    <button
+                        id="main-btn"
+                        class="btn"
+                        onclick="handleAction()"
+                    >
+                        Ver Pregunta
+                    </button>
+
+                    <button
+                        id="back-btn"
+                        class="btn btn-back"
+                        onclick="goBack()"
+                        style="display: none;"
+                    >
+                        ← Volver atrás
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="counter-label">0 / 60</span>
+                </div>
+
+                <div class="progress-track">
+                    <div
+                        id="progress-fill"
+                        class="progress-fill"
+                    ></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const femaleQuestions = [
+            "¿Cuál es tu juguete sexual favorito? ¿Has utilizado algún objeto para masturbarte que no sea un juguete sexual?",
+            "¿Alguna vez has reservado un hotel solo para mantener relaciones sexuales?",
+            "¿Cuántos orgasmos has llegado a tener en una sola noche? ¿Crees que lo podrías superar?",
+            "¿Disfrutas haciendo sexo oral? ¿Te gusta más dar o recibir sexo oral?",
+            "¿Qué fantasía sexual te gustaría poder cumplir con tu pareja?",
+            "¿Te gusta llevar ropa interior provocativa aunque sepas que nadie la va a ver?",
+            "¿Buscas maneras de evitar la monotonía en la cama?",
+            "¿Te gustaría tener sexo anal? ¿Prefieres dar o recibir?",
+            "¿Cuántos años tenías cuando viste tu primera película o video porno?",
+            "¿Te gustaría practicar BDSM con tu pareja? ¿Prefieres ser la persona sumisa o la dominante?",
+            "¿Prefieres sexo oral o penetración?",
+            "¿Te has masturbado alguna vez frente al espejo?",
+            "¿Te gustaría grabar una sesión de sexo con tu pareja? ¿Qué escena, postura o práctica sexual te gustaría grabar?",
+            "¿Qué práctica o postura sexual te gustaría probar que aún no hayas hecho nunca?",
+            "¿Te gustaría que una persona de tu mismo sexo te hiciera sexo oral?",
+            "¿Tienes algún fetiche inconfesable?",
+            "¿Te gustaría ver cómo otro hombre le hace sexo oral a tu pareja o lo penetra analmente?",
+            "¿Cuándo fue la última vez que te masturbaste?",
+            "¿Alguna vez te has masturbado mientras leías una historia o libro erótico?",
+            "¿Tendrías relaciones con una persona de tu mismo sexo?",
+            "¿Cuál es tu posición sexual favorita?",
+            "¿Prefieres estar arriba y llevar el control o que tu pareja lleve el control en tus relaciones sexuales?",
+            "¿Alguna vez te has humedecido solo por el simple hecho de ver o estar hablando con alguien que te atraía?",
+            "¿Te gusta mantener tu zona íntima depilada o sin depilar? ¿Y la de tu pareja, te gusta que la tenga depilada o sin depilar?",
+            "Si hicieses un trío, ¿cómo te gustaría más: HMM o MMH?",
+            "¿Has practicado nudismo en alguna ocasión? ¿Te gustaría practicarlo sola o con tu pareja?",
+            "¿Has tenido relaciones sexuales en algún espacio público? ¿Lo harías?",
+            "¿Qué es lo más sucio sexualmente que te gustaría que te hiciese tu pareja? ¿Y hacerle tú a él?",
+            "¿Qué te excita más, llevar la iniciativa o dejarte dominar?",
+            "Fin del juego. Puedes hacerle 2 preguntas más a tu pareja. Puedes elegir dos que tú quieras o pueden ser de las que te hayan tocado a ti en este juego."
+        ];
+
+        const maleQuestions = [
+            "¿Antes de empezar a salir, alguna vez fantaseaste con tu pareja?",
+            "Si pudieras ser del sexo opuesto durante un día entero, ¿qué harías?",
+            "¿Qué es lo más sucio sexualmente que te gustaría que te hiciera tu pareja?",
+            "¿Qué actividad o postura sexual has realizado y has descubierto que te gusta, y hace unos años jamás pensaste que la harías?",
+            "¿Cuál es el juego de roles que te gustaría probar?",
+            "¿Cuál es la fantasía que más quieres hacer?",
+            "¿Qué tipo de ropa interior te excita más?",
+            "¿Te gustaría tener sexo anal? ¿Dar o recibir?",
+            "¿Te gustaría practicar BDSM con tu pareja? ¿Elegirías ser sumiso o dominante?",
+            "¿Cuál sería el regalo que te pondría más caliente?",
+            "¿Tendrías relaciones con una persona de tu mismo sexo?",
+            "¿Cuál es tu posición sexual favorita?",
+            "¿Qué es lo primero que piensas cuando ves a tu pareja saliendo de la ducha o vistiéndose?",
+            "¿Te has masturbado alguna vez frente al espejo?",
+            "¿Qué práctica o postura sexual nueva te gustaría probar?",
+            "¿Te gustaría ir con tu pareja a un sex-shop? ¿Qué crees que sería lo que compraríais?",
+            "¿Cuál es el mejor recuerdo erótico de tu pareja?",
+            "¿Te gustaría que una persona de tu mismo sexo te hiciera sexo oral?",
+            "¿Cuál es la parte del cuerpo del otro sexo en que te fijas primero?",
+            "¿Cuántos años tenías cuando viste tu primera película porno?",
+            "¿Cuándo fue la última vez que te masturbaste?",
+            "¿Has probado alguna vez el beso blanco? ¿Dejarías que tu pareja te diese un beso blanco?",
+            "¿Alguna vez has tenido una erección involuntaria en público donde alguien se haya dado cuenta?",
+            "¿Te gusta que tu pareja vaya vestida sexy o más recatada?",
+            "¿Has practicado nudismo? ¿Te gustaría hacerlo solo o con tu pareja?",
+            "¿Aceptarías si tu pareja te propusiese grabar un vídeo porno?",
+            "Si hicieses un trío, ¿cómo te gustaría más: HMM o MMH?",
+            "Di al menos dos cosas que tu pareja te hace en la intimidad y te excitan mucho.",
+            "¿Qué juguete sexual te gustaría usar con tu pareja y cuál te gustaría que ella usase contigo?",
+            "Fin del juego. Puedes hacerle 2 preguntas más a tu pareja. Puedes elegir dos que tú quieras o pueden ser de las que te hayan tocado a ti en este juego."
+        ];
+
+        let qIndex = 0;
+        let isFemaleTurn = true;
+        let isQuestionShowing = false;
+        let gameFinished = false;
+
+        let pFemale = "";
+        let pMale = "";
+
+        const TOTAL_TURNS = femaleQuestions.length + maleQuestions.length;
+
+        function startGame() {
+            pFemale =
+                document.getElementById("name-female").value.trim().toUpperCase() || "ELLA";
+
+            pMale =
+                document.getElementById("name-male").value.trim().toUpperCase() || "ÉL";
+
+            qIndex = 0;
+            isFemaleTurn = true;
+            isQuestionShowing = false;
+            gameFinished = false;
+
+            document.getElementById("screen-start").classList.remove("active");
+            document.getElementById("screen-game").classList.add("active");
+
+            updateUI();
+        }
+
+        function updateUI() {
+            const nameDisplay =
+                document.getElementById("current-player-name");
+
+            const btn =
+                document.getElementById("main-btn");
+
+            const backBtn =
+                document.getElementById("back-btn");
+
+            const questionContent =
+                document.getElementById("question-content");
+
+            const counterLabel =
+                document.getElementById("counter-label");
+
+            const progressFill =
+                document.getElementById("progress-fill");
+
+            if (gameFinished) {
+                nameDisplay.innerText = "";
+                nameDisplay.className = "player-name";
+                questionContent.innerText =
+                    "¡Habéis completado el desafío!";
+
+                btn.innerText = "Reiniciar";
+                btn.style.background = "#ffffff";
+                btn.style.color = "#000000";
+                btn.onclick = restartGame;
+
+                backBtn.style.display = "none";
+                counterLabel.innerText =
+                    TOTAL_TURNS + " / " + TOTAL_TURNS;
+                progressFill.style.width = "100%";
+
+                return;
+            }
+
+            nameDisplay.innerText =
+                isFemaleTurn ? pFemale : pMale;
+
+            nameDisplay.className =
+                isFemaleTurn
+                    ? "player-name female-text"
+                    : "player-name male-text";
+
+            document.body.className =
+                isFemaleTurn ? "bg-female" : "bg-male";
+
+            if (isQuestionShowing) {
+                questionContent.innerText =
+                    isFemaleTurn
+                        ? femaleQuestions[qIndex]
+                        : maleQuestions[qIndex];
+
+                btn.innerText = "Siguiente Turno";
+                btn.style.background = "#ffffff";
+                btn.style.color = "#000000";
+                btn.onclick = handleAction;
+            } else {
+                questionContent.innerText = "¿Listo/a?";
+
+                btn.innerText = "Ver Pregunta";
+                btn.style.background =
+                    isFemaleTurn
+                        ? "var(--female-color)"
+                        : "var(--male-color)";
+                btn.style.color = "#ffffff";
+                btn.onclick = handleAction;
+            }
+
+            const currentCount =
+                (qIndex * 2) + (isFemaleTurn ? 0 : 1);
+
+            counterLabel.innerText =
+                currentCount + " / " + TOTAL_TURNS;
+
+            progressFill.style.width =
+                Math.min((currentCount / TOTAL_TURNS) * 100, 100) + "%";
+
+            backBtn.style.display =
+                (qIndex === 0 && isFemaleTurn && !isQuestionShowing)
+                    ? "none"
+                    : "block";
+        }
+
+        function handleAction() {
+            if (!isQuestionShowing) {
+                isQuestionShowing = true;
+                updateUI();
+                return;
+            }
+
+            // Después de la pregunta de Él, avanzamos a la siguiente pareja.
+            if (!isFemaleTurn) {
+                qIndex++;
+            }
+
+            // Se han mostrado las 30 preguntas de cada jugador.
+            if (qIndex >= femaleQuestions.length ||
+                qIndex >= maleQuestions.length) {
+
+                gameFinished = true;
+                updateUI();
+                return;
+            }
+
+            isFemaleTurn = !isFemaleTurn;
+            isQuestionShowing = false;
+
+            updateUI();
+        }
+
+        function goBack() {
+            if (gameFinished) {
+                return;
+            }
+
+            if (isQuestionShowing) {
+                isQuestionShowing = false;
+            } else {
+                if (isFemaleTurn) {
+                    if (qIndex > 0) {
+                        isFemaleTurn = false;
+                        qIndex--;
+                    }
+                    isQuestionShowing = true;
+                } else {
+                    isFemaleTurn = true;
+                    isQuestionShowing = true;
+                }
+            }
+
+            updateUI();
+        }
+
+        function restartGame() {
+            qIndex = 0;
+            isFemaleTurn = true;
+            isQuestionShowing = false;
+            gameFinished = false;
+
+            document.getElementById("screen-game").classList.remove("active");
+            document.getElementById("screen-start").classList.add("active");
+
+            document.body.className = "bg-dark";
+
+            const btn = document.getElementById("main-btn");
+            btn.onclick = handleAction;
+
+            updateUI();
+        }
+
+        // Permite pulsar Enter en el formulario inicial.
+        document
+            .getElementById("name-female")
+            .addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    startGame();
+                }
+            });
+
+        document
+            .getElementById("name-male")
+            .addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    startGame();
+                }
+            });
+    </script>
+
+</body>
+</html>
